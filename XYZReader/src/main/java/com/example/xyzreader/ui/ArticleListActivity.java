@@ -57,7 +57,6 @@ public class ArticleListActivity extends ActionBarActivity implements
 
 //        mToolbar = (Toolbar) findViewById(R.id.collapsing_toolbar);
 
-
         final View toolbarContainerView = findViewById(R.id.toolbar_container);
 
 //        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
@@ -141,11 +140,17 @@ public class ArticleListActivity extends ActionBarActivity implements
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = getLayoutInflater().inflate(R.layout.list_item_article, parent, false);
             final ViewHolder vh = new ViewHolder(view);
+
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
+                    Intent intent = new Intent(Intent.ACTION_VIEW,
+                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())));
+                    intent.putExtra("Position", vh.getAdapterPosition());
+                    Log.d(TAG, "onClick: " + vh.getAdapterPosition());
+//                    ActivityOptionsCompat options = ActivityOptionsCompat.
+//                            makeSceneTransitionAnimation(ArticleListActivity.this, (View) view.findViewById(R.id.thumbnail) , "transition");
+                    startActivity(intent);
                 }
             });
             return vh;
@@ -186,6 +191,7 @@ public class ArticleListActivity extends ActionBarActivity implements
                     mCursor.getString(ArticleLoader.Query.THUMB_URL),
                     ImageLoaderHelper.getInstance(ArticleListActivity.this).getImageLoader());
             holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
+//            Bitmap bitmap = BitmapFactory.decodeStream((InputStream)
         }
 
         @Override
