@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.RecyclerView;
@@ -65,9 +63,9 @@ public class ArticleListActivity extends ActionBarActivity implements
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         getLoaderManager().initLoader(0, null, this);
 
-//        if (savedInstanceState == null) {
-//            refresh();
-//        }
+        if (savedInstanceState == null) {
+            refresh();
+        }
     }
 
     private void refresh() {
@@ -149,10 +147,7 @@ public class ArticleListActivity extends ActionBarActivity implements
                             ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())));
                     intent.putExtra("Position", vh.getAdapterPosition());
                     Log.d(TAG, "onClick: " + vh.getAdapterPosition());
-                    View thumbnail = (View) view.findViewById(R.id.thumbnail);
-                    ActivityOptionsCompat options = ActivityOptionsCompat.
-                            makeSceneTransitionAnimation(ArticleListActivity.this, thumbnail , ViewCompat.getTransitionName(thumbnail));
-                    startActivity(intent, options.toBundle());
+                    startActivity(intent);
                 }
             });
             return vh;
@@ -193,7 +188,6 @@ public class ArticleListActivity extends ActionBarActivity implements
                     mCursor.getString(ArticleLoader.Query.THUMB_URL),
                     ImageLoaderHelper.getInstance(ArticleListActivity.this).getImageLoader());
             holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
-//            Bitmap bitmap = BitmapFactory.decodeStream((InputStream)
         }
 
         @Override

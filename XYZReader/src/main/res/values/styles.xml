@@ -25,14 +25,6 @@
     </style>
 
     <style name="AppTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowContentTransitions">true</item>
-
-        <item name="android:windowSharedElementEnterTransition">
-            @transition/change_image_transform</item>
-
-        <item name="android:windowSharedElementExitTransition">
-            @transition/change_image_transform</item>
-
         <item name="colorPrimary">@color/dark</item>
         <item name="android:colorPrimaryDark">@color/dark</item>
         <item name="android:fillColor">@color/brown_vibrant_light</item>
