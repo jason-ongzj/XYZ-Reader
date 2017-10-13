@@ -1,12 +1,15 @@
 package com.example.xyzreader.ui;
 
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.Html;
@@ -14,8 +17,13 @@ import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
@@ -41,6 +49,7 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     private static final String TAG = ArticleListActivity.class.toString();
     private Unbinder unbinder;
+    private Context mContext;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
@@ -57,6 +66,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
         unbinder = ButterKnife.bind(this);
+        mContext = this;
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
@@ -93,7 +103,7 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        Adapter adapter = new Adapter(cursor);
+        Adapter adapter = new Adapter(cursor, Glide.with(this));
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
         int columnCount = getResources().getInteger(R.integer.list_column_count);
@@ -109,10 +119,12 @@ public class ArticleListActivity extends AppCompatActivity implements
     private class Adapter extends RecyclerView.Adapter<ViewHolder> {
         private Cursor mCursor;
         private int darkVibrantColor;
-        private int lightColor;
+        private int defaultColor;
+        private final RequestManager glide;
 
-        public Adapter(Cursor cursor) {
+        public Adapter(Cursor cursor, RequestManager glide) {
             mCursor = cursor;
+            this.glide = glide;
         }
 
         @Override
@@ -132,8 +144,8 @@ public class ArticleListActivity extends AppCompatActivity implements
                     Intent intent = new Intent(Intent.ACTION_VIEW,
                             ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())));
                     intent.putExtra("Position", vh.getAdapterPosition());
-                    intent.putExtra("DarkVibrantColor", darkVibrantColor);
-                    Log.d(TAG, "onClick: " + vh.getAdapterPosition());
+                    intent.putExtra("DarkVibrantColor", vh.color);
+                    Log.d(TAG, "onClick: " + vh.color);
                     startActivity(intent);
                 }
             });
@@ -171,28 +183,21 @@ public class ArticleListActivity extends AppCompatActivity implements
                         + "<br/>" + " by "
                         + mCursor.getString(ArticleLoader.Query.AUTHOR)));
             }
-//
-//            Glide.with(ArticleListActivity.this)
-//                    .asBitmap()
-//                    .load(mCursor.getString(ArticleLoader.Query.THUMB_URL))
-//                    .into(new SimpleTarget<Bitmap>() {
-//                        @Override
-//                        public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-//                            holder.thumbnailView.setImageBitmap(resource);
-////                            extractColor(resource);
-//                        }
-//
-//                        private void extractColor(Bitmap resource){
-//                            Palette p = Palette.from(resource).generate();
-//                            int defaultColor = ArticleListActivity.this.getResources().getColor(R.color.primary);
-//                            darkVibrantColor = p.getDarkVibrantColor(defaultColor);
-//                        }
-//                    });
+            glide.load(mCursor.getString(ArticleLoader.Query.THUMB_URL))
+                    .asBitmap()
+                    .centerCrop()
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> transition) {
+                            holder.thumbnailView.setImageBitmap(resource);
+                            extractColor(resource);
+                        }
 
-            holder.thumbnailView.setImageUrl(
-                    mCursor.getString(ArticleLoader.Query.THUMB_URL),
-                    ImageLoaderHelper.getInstance(ArticleListActivity.this).getImageLoader());
-            holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
+                        private void extractColor(Bitmap resource){
+                            Palette p = Palette.from(resource).generate();
+                            holder.color = p.getDarkVibrantColor(p.getDarkMutedColor(0));
+                        }
+                    });
         }
 
         @Override
@@ -203,13 +208,17 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.thumbnail) DynamicHeightNetworkImageView thumbnailView;
+        @BindView(R.id.thumbnail)
+        ImageView thumbnailView;
         @BindView(R.id.article_title) TextView titleView;
         @BindView(R.id.article_subtitle) TextView subtitleView;
+
+        public int color;
 
         public ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+            int color;
         }
     }
 }

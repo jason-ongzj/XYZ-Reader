@@ -35,5 +35,5 @@
     <color name="blue_vibrant_dark">#173361</color>
     <color name="blue_light">#afafaf</color>
 
-    <color name="primary">#000000</color>
+    <color name="alpha">#15030303</color>
 </resources>

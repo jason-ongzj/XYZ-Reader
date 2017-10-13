@@ -12,7 +12,6 @@ import android.support.v4.app.ShareCompat;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,8 +19,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 
@@ -48,6 +48,7 @@ public class ArticleDetailFragment extends Fragment implements
     private long mItemId;
     private View mRootView;
     private int mScrollY;
+    private int mColor;
 
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
@@ -111,7 +112,11 @@ public class ArticleDetailFragment extends Fragment implements
             Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
         ButterKnife.bind(this, mRootView);
-        meta_bar.setBackgroundColor(getActivity().getIntent().getIntExtra("DarkVibrantColor", 0));
+        mColor = getActivity().getIntent().getIntExtra("DarkVibrantColor", R.color.dark);
+        if (mColor == 0){
+            mColor = getResources().getColor(R.color.blue_vibrant_dark, null);
+        }
+        meta_bar.setBackgroundColor(mColor);
         mRootView.findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -171,24 +176,18 @@ public class ArticleDetailFragment extends Fragment implements
             }
             bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY).replaceAll("(\r\n\r\n)", "<br /> <br />")
                                                                                         .replaceAll("(\r\n)", " ")));
-            ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
-                    .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
+//
+            Glide.with(getActivity())
+                    .load(mCursor.getString(ArticleLoader.Query.PHOTO_URL))
+                    .asBitmap()
+                    .into(new SimpleTarget<Bitmap>() {
                         @Override
-                        public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
-                            Bitmap bitmap = imageContainer.getBitmap();
-                            if (bitmap != null) {
-                                DisplayMetrics metrics = new DisplayMetrics();
-                                getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
-                                int pixelWidth = metrics.widthPixels;
-                                float pixelHeight = (float) pixelWidth/bitmap.getWidth() * (float) bitmap.getHeight();
-                                Bitmap bitmap_new = Bitmap.createScaledBitmap(bitmap,pixelWidth, (int)pixelHeight, false);
-                                mPhotoView.setImageBitmap(bitmap_new);
-                            }
-                        }
-
-                        @Override
-                        public void onErrorResponse(VolleyError volleyError) {
-
+                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            float aspectRatio = mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO);
+                            float pixelWidth = aspectRatio*resource.getWidth();
+                            float pixelHeight = aspectRatio*resource.getHeight();
+                            Bitmap bitmap = Bitmap.createScaledBitmap(resource, (int)pixelWidth, (int)pixelHeight, false);
+                            mPhotoView.setImageBitmap(bitmap);
                         }
                     });
         } else {
