@@ -21,11 +21,19 @@
     <color name="theme_accent">#04561A</color>
     <color name="ltgray">#ffe0e0e0</color>
 
-    <color name="brown_dark">#382500</color>
+    <color name="dark">#000000</color>
+    <color name="brown_super_dark">#b94a00</color>
+    <color name="brown_dark">#603f00</color>
     <color name="brown_vibrant_light">#fde4b1</color>
 
-    <color name="dark">#000000</color>
-
+    <color name="vibrant_dark">#c97832</color>
+    <color name="vibrant_light">#fcdec4</color>
     <color name="background_color">#FFF9E7</color>
 
+    <color name="blue_super_dark">#001e4d</color>
+    <color name="blue_dark">#00255e</color>
+    <color name="blue_vibrant_dark">#173361</color>
+    <color name="blue_light">#afafaf</color>
+
+    <color name="primary">#000000</color>
 </resources>

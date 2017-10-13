@@ -6,7 +6,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.Html;
@@ -36,7 +36,7 @@ import butterknife.Unbinder;
  * touched, lead to a {@link ArticleDetailActivity} representing item details. On tablets, the
  * activity presents a grid of items as cards.
  */
-public class ArticleListActivity extends ActionBarActivity implements
+public class ArticleListActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = ArticleListActivity.class.toString();
@@ -108,6 +108,8 @@ public class ArticleListActivity extends ActionBarActivity implements
 
     private class Adapter extends RecyclerView.Adapter<ViewHolder> {
         private Cursor mCursor;
+        private int darkVibrantColor;
+        private int lightColor;
 
         public Adapter(Cursor cursor) {
             mCursor = cursor;
@@ -130,6 +132,7 @@ public class ArticleListActivity extends ActionBarActivity implements
                     Intent intent = new Intent(Intent.ACTION_VIEW,
                             ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())));
                     intent.putExtra("Position", vh.getAdapterPosition());
+                    intent.putExtra("DarkVibrantColor", darkVibrantColor);
                     Log.d(TAG, "onClick: " + vh.getAdapterPosition());
                     startActivity(intent);
                 }
@@ -149,7 +152,7 @@ public class ArticleListActivity extends ActionBarActivity implements
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
+        public void onBindViewHolder(final ViewHolder holder, int position) {
             mCursor.moveToPosition(position);
             holder.titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
             Date publishedDate = parsePublishedDate();
@@ -168,6 +171,24 @@ public class ArticleListActivity extends ActionBarActivity implements
                         + "<br/>" + " by "
                         + mCursor.getString(ArticleLoader.Query.AUTHOR)));
             }
+//
+//            Glide.with(ArticleListActivity.this)
+//                    .asBitmap()
+//                    .load(mCursor.getString(ArticleLoader.Query.THUMB_URL))
+//                    .into(new SimpleTarget<Bitmap>() {
+//                        @Override
+//                        public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+//                            holder.thumbnailView.setImageBitmap(resource);
+////                            extractColor(resource);
+//                        }
+//
+//                        private void extractColor(Bitmap resource){
+//                            Palette p = Palette.from(resource).generate();
+//                            int defaultColor = ArticleListActivity.this.getResources().getColor(R.color.primary);
+//                            darkVibrantColor = p.getDarkVibrantColor(defaultColor);
+//                        }
+//                    });
+
             holder.thumbnailView.setImageUrl(
                     mCursor.getString(ArticleLoader.Query.THUMB_URL),
                     ImageLoaderHelper.getInstance(ArticleListActivity.this).getImageLoader());

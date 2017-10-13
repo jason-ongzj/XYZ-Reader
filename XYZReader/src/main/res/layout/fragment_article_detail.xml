@@ -92,14 +92,13 @@
                 android:paddingBottom="@dimen/detail_body_bottom_margin"
                 android:paddingTop="16dp"
                 android:textColor="@color/dark"
-                android:textColorLink="@color/theme_accent"
                 android:textSize="@dimen/detail_body_text_size" />
 
         </com.example.xyzreader.ui.MaxWidthLinearLayout>
 
     </com.example.xyzreader.ui.ObservableScrollView>
 
-    <ImageButton
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/share_fab"
         android:layout_width="56dp"
         android:layout_height="56dp"

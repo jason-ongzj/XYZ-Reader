@@ -66,6 +66,8 @@ public class ArticleDetailFragment extends Fragment implements
     TextView bylineView;
     @BindView(R.id.article_body)
     TextView bodyView;
+    @BindView(R.id.meta_bar)
+    View meta_bar;
 
 
     /**
@@ -109,6 +111,7 @@ public class ArticleDetailFragment extends Fragment implements
             Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
         ButterKnife.bind(this, mRootView);
+        meta_bar.setBackgroundColor(getActivity().getIntent().getIntExtra("DarkVibrantColor", 0));
         mRootView.findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
