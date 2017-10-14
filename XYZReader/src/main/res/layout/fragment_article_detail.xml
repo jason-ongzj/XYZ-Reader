@@ -16,9 +16,9 @@
             <ImageView
                 android:id="@+id/thumbnail"
                 android:layout_width="match_parent"
+                android:backgroundTint="@color/photo_placeholder"
                 android:layout_height="@dimen/detail_picture_image"
-                android:scaleType="centerCrop"
-                android:transitionName="transition" />
+                android:scaleType="centerCrop" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -29,8 +29,7 @@
             android:fitsSystemWindows="true"
             android:orientation="vertical"
             app:layout_collapseMode="pin"
-            app:layout_scrollFlags="enterAlways"
-            android:theme="@style/AppTheme">
+            app:layout_scrollFlags="enterAlways">
 
             <TextView
                 android:id="@+id/article_title"
@@ -75,7 +74,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:background="@color/background_color"
             android:elevation="2dp"
             android:maxWidth="@dimen/detail_card_max_width"
             android:orientation="vertical">

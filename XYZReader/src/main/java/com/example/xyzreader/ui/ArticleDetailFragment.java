@@ -8,7 +8,9 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.view.ViewPager;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
@@ -50,6 +52,7 @@ public class ArticleDetailFragment extends Fragment implements
     private int mScrollY;
     private int mColor;
 
+    private PagerInterface mCallback;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
@@ -69,6 +72,8 @@ public class ArticleDetailFragment extends Fragment implements
     TextView bodyView;
     @BindView(R.id.meta_bar)
     View meta_bar;
+    @BindView(R.id.share_fab)
+    FloatingActionButton mFAB;
 
 
     /**
@@ -105,6 +110,14 @@ public class ArticleDetailFragment extends Fragment implements
         // fragments because their mIndex is -1 (haven't been added to the activity yet). Thus,
         // we do this in onActivityCreated.
         getLoaderManager().initLoader(0, null, this);
+
+        try{
+            mCallback = (PagerInterface) getActivity();
+            mCallback.getViewPager().setPageTransformer(true, new SlidePageTransformer());
+        } catch (ClassCastException e){
+            throw new ClassCastException(getActivity().toString()
+                    + " must implement DataCommunication");
+        }
     }
 
     @Override
@@ -225,5 +238,29 @@ public class ArticleDetailFragment extends Fragment implements
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
         mCursor = null;
         bindViews();
+    }
+
+    public class SlidePageTransformer implements ViewPager.PageTransformer {
+
+        @Override
+        public void transformPage(View view, float position) {
+            int pageWidth = view.getWidth();
+
+            if (position < -1) { // [-Infinity,-1)
+                // This page is way off-screen to the left.
+                view.setAlpha(1);
+                mFAB.setRotation(0);
+            } else if (position <= 1){
+                mPhotoView.setTranslationX((float)(-(position) * 0.2 * pageWidth));
+                bodyView.setTranslationX((float)(-(position) * 0.6 * pageWidth));
+                meta_bar.setTranslationX((float)(-(position) * 0.4 * pageWidth));
+                mFAB.setRotation(-position * 360);
+                mFAB.setTranslationX((float)(-(position) * pageWidth));
+            } else { // (1,+Infinity]
+                // This page is way off-screen to the right.
+                view.setAlpha(1);
+                mFAB.setRotation(0);
+            }
+        }
     }
 }

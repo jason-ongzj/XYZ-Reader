@@ -18,7 +18,6 @@ import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -188,13 +187,16 @@ public class ArticleListActivity extends AppCompatActivity implements
                         + "<br/>" + " by "
                         + mCursor.getString(ArticleLoader.Query.AUTHOR)));
             }
+            holder.thumbnailView.setImageUrl(
+                    mCursor.getString(ArticleLoader.Query.THUMB_URL),
+                    ImageLoaderHelper.getInstance(ArticleListActivity.this).getImageLoader());
+            holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
             glide.load(mCursor.getString(ArticleLoader.Query.THUMB_URL))
                     .asBitmap()
-                    .centerCrop()
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> transition) {
-                            holder.thumbnailView.setImageBitmap(resource);
+//                            holder.thumbnailView.setImageBitmap(resource);
                             extractColor(resource);
                         }
 
@@ -214,7 +216,7 @@ public class ArticleListActivity extends AppCompatActivity implements
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.thumbnail)
-        ImageView thumbnailView;
+        DynamicHeightNetworkImageView thumbnailView;
         @BindView(R.id.article_title) TextView titleView;
         @BindView(R.id.article_subtitle) TextView subtitleView;
 

@@ -23,7 +23,8 @@ import butterknife.ButterKnife;
  * An activity representing a single Article detail screen, letting you swipe between articles.
  */
 public class ArticleDetailActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<Cursor> {
+        implements LoaderManager.LoaderCallbacks<Cursor>,
+        PagerInterface{
 
     private Cursor mCursor;
     private int mPosition;
@@ -92,5 +93,10 @@ public class ArticleDetailActivity extends AppCompatActivity
         public int getCount() {
             return (mCursor != null) ? mCursor.getCount() : 0;
         }
+    }
+
+    @Override
+    public ViewPager getViewPager() {
+        return mPager;
     }
 }
