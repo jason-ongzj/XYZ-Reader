@@ -25,12 +25,9 @@
     </style>
 
     <style name="AppTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimaryDark">@color/blue_dark</item>
+        <item name="colorPrimaryDark">@color/dark</item>
         <item name="colorPrimary">@color/blue_super_dark</item>
         <item name="colorAccent">@color/theme_accent</item>
-        <!--<item name="android:fillColor">@color/blue_light</item>-->
-        <!--<item name="android:solidColor">@color/blue_vibrant_dark</item>-->
-        <!--<item name="android:colorBackground">@color/background_color</item>-->
     </style>
 
 </resources>

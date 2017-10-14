@@ -11,5 +11,6 @@
     <dimen name="fab_margin">24dp</dimen>
 
     <dimen name="detail_picture_image">300dp</dimen>
+    <dimen name="list_picture">100dp</dimen>
 
 </resources>
